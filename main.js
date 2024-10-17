@@ -19,6 +19,40 @@ let slideInterval = parseInt(autoSlideIntervalInput.value); // 초기 자동 슬
 carouselSlide.style.transform = `translateX(${-size * counter}px)`;
 updateIndicators(counter);
 
+// 다음 슬라이드로 자동 이동하는 함수
+function autoSlide() {
+  isAutoSliding = true;
+  stopBtn.textContent = '자동 슬라이드 중지';
+  autoSlideInterval = setInterval(() => {
+    moveToNextSlide();
+  }, slideInterval); // 사용자가 설정한 자동 슬라이드 간격
+}
+
+// 자동 슬라이드 중지 함수
+function stopAutoSlide() {
+  isAutoSliding = false;
+  clearInterval(autoSlideInterval);
+  stopBtn.textContent = '자동 슬라이드 시작';
+}
+
+// 다음 슬라이드로 이동하는 함수
+function moveToNextSlide() {
+  if (counter >= carouselItems.length - 1) {
+    return;
+  }
+
+  moveSlide(1);
+}
+
+// 이전 슬라이드로 이동하는 함수
+function moveToPrevSlide() {
+  if (counter <= 0) {
+    return;
+  }
+
+  moveSlide(-1);
+}
+
 // 슬라이드 이동 함수
 function moveSlide(step) {
   carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
@@ -50,42 +84,6 @@ indicators.forEach((indicator) => {
   });
 });
 
-// 다음 슬라이드로 자동 이동하는 함수
-function autoSlide() {
-  autoSlideInterval = setInterval(() => {
-    moveToNextSlide();
-  }, slideInterval); // 사용자가 설정한 자동 슬라이드 간격
-}
-
-// 자동 슬라이드 중지 함수
-function stopAutoSlide() {
-  clearInterval(autoSlideInterval);
-}
-
-// 자동 슬라이드를 중지 또는 재개하는 함수
-function toggleAutoSlide() {
-  if (isAutoSliding) {
-    stopAutoSlide();
-    stopBtn.textContent = '자동 슬라이드 시작'; // 버튼 텍스트 변경
-  } else {
-    autoSlide();
-    stopBtn.textContent = '자동 슬라이드 중지'; // 버튼 텍스트 변경
-  }
-  isAutoSliding = !isAutoSliding; // 상태 반전
-}
-
-// 다음 슬라이드로 이동하는 함수
-function moveToNextSlide() {
-  if (counter >= carouselItems.length - 1) return;
-  moveSlide(1);
-}
-
-// 이전 슬라이드로 이동하는 함수
-function moveToPrevSlide() {
-  if (counter <= 0) return;
-  moveSlide(-1);
-}
-
 // 버튼 클릭 이벤트
 nextBtn.addEventListener('click', () => {
   moveToNextSlide();
@@ -97,8 +95,14 @@ prevBtn.addEventListener('click', () => {
   stopAutoSlide(); // 수동 슬라이드 조작 시 자동 슬라이드 중지
 });
 
-// 자동 슬라이드 중지 버튼 클릭 이벤트
-stopBtn.addEventListener('click', toggleAutoSlide);
+// 자동 슬라이드 중지 버튼 클릭 이벤트  리스너
+stopBtn.addEventListener('click', () => {
+  if (isAutoSliding) {
+    stopAutoSlide();
+  } else {
+    autoSlide();
+  }
+});
 
 // 슬라이드 전환 속도 및 간격 변경 시 이벤트 리스너
 transitionSpeedInput.addEventListener('change', (event) => {
@@ -107,6 +111,7 @@ transitionSpeedInput.addEventListener('change', (event) => {
 
 autoSlideIntervalInput.addEventListener('change', (event) => {
   slideInterval = parseInt(event.target.value);
+
   if (isAutoSliding) {
     stopAutoSlide(); // 현재 자동 슬라이드 중지
     autoSlide(); // 새로운 간격으로 다시 시작
