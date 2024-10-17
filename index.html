@@ -2,12 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>waiker</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div class="slide_container">
+      <div class="button_container">
+        <button class="stopBtn">자동 슬라이드 중지</button>
+      </div>
+      <div>
+        <label for="transitionSpeed">슬라이드 전환 속도 (밀리초): </label>
+        <input type="number" id="transitionSpeed" value="400" />
+      </div>
+      <div>
+        <label for="autoSlideInterval">자동 슬라이드 간격 (밀리초): </label>
+        <input type="number" id="autoSlideInterval" value="3000" />
+      </div>
+      <div class="slide_box">
+        <div class="slide_list">
+          <div id="lastClone" class="slide_item">5</div>
+          <div class="slide_item">1</div>
+          <div class="slide_item">2</div>
+          <div class="slide_item">3</div>
+          <div class="slide_item">4</div>
+          <div class="slide_item">5</div>
+          <div id="firstClone" class="slide_item">1</div>
+        </div>
+      </div>
+      <div class="button_container">
+        <button class="prevBtn">이전</button>
+        <button class="nextBtn">다음</button>
+      </div>
+      <div class="indicator_container">
+        <div class="indicator" data-slide="1"></div>
+        <div class="indicator" data-slide="2"></div>
+        <div class="indicator" data-slide="3"></div>
+        <div class="indicator" data-slide="4"></div>
+        <div class="indicator" data-slide="5"></div>
+      </div>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
