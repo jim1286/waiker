@@ -31,6 +31,20 @@ window.addEventListener('resize', () => {
   updateSlideListWidth();
 });
 
+textSlideInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    addSlideItem();
+  }
+});
+
+imageSlideInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    addSlideItem();
+  }
+});
+
 // 다음 슬라이드로 자동 이동하는 함수
 function autoSlide() {
   isAutoSliding = true;
