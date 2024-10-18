@@ -20,6 +20,33 @@ let autoSlideInterval;
 let isAutoSliding = true; // 자동 슬라이드 상태를 추적
 let transitionSpeed = parseInt(transitionSpeedInput.value); // 초기 전환 속도
 let slideInterval = parseInt(autoSlideIntervalInput.value); // 초기 자동 슬라이드 간격
+let size = slideBox.clientWidth;
+
+// 터치 이벤트를 위한 변수 선언
+let touchStartX = 0;
+let touchEndX = 0;
+
+// 터치 시작 이벤트
+carouselSlide.addEventListener('touchstart', (event) => {
+  touchStartX = event.touches[0].clientX; // 터치 시작 위치
+});
+
+// 터치 종료 이벤트
+carouselSlide.addEventListener('touchend', (event) => {
+  touchEndX = event.changedTouches[0].clientX; // 터치 종료 위치
+  handleGesture(); // 제스처 처리 함수 호출
+});
+
+// 제스처 처리 함수
+function handleGesture() {
+  if (touchEndX < touchStartX - 50) {
+    // 왼쪽으로 스와이프
+    moveSlide(1); // 다음 슬라이드로 이동
+  } else if (touchEndX > touchStartX + 50) {
+    // 오른쪽으로 스와이프
+    moveSlide(-1); // 이전 슬라이드로 이동
+  }
+}
 
 // 초기 위치 설정
 carouselSlide.style.transform = `translateX(${-size * counter}px)`;
