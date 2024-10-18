@@ -34,6 +34,7 @@ carouselSlide.addEventListener('touchstart', (event) => {
 // 터치 종료 이벤트
 carouselSlide.addEventListener('touchend', (event) => {
   touchEndX = event.changedTouches[0].clientX; // 터치 종료 위치
+  stopAutoSlide();
   handleGesture(); // 제스처 처리 함수 호출
 });
 
