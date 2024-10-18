@@ -1,3 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
 .slide_container {
   display: flex;
   flex-direction: column;
@@ -12,6 +28,7 @@
   width: 100px;
   height: 100px;
   overflow: hidden;
+  border: 1px solid gray;
 }
 
 .slide_item {
@@ -34,6 +51,7 @@
   display: flex;
   justify-content: space-between;
   width: 100px;
+  gap: 10px;
 }
 
 .indicator_container {

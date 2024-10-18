@@ -1,13 +1,19 @@
 const carouselSlide = document.querySelector('.slide_list');
-const carouselItems = document.querySelectorAll('.slide_item');
 const prevBtn = document.querySelector('.prevBtn');
 const nextBtn = document.querySelector('.nextBtn');
 const stopBtn = document.querySelector('.stopBtn');
-const indicators = document.querySelectorAll('.indicator'); // 인디케이터 요소
 const transitionSpeedInput = document.getElementById('transitionSpeed');
 const autoSlideIntervalInput = document.getElementById('autoSlideInterval');
+const addSlideBtn = document.getElementById('addSlideBtn');
+const slideTypeSelect = document.getElementById('slideType');
+const textSlideInput = document.getElementById('textSlideInput');
+const newSlideItemInput = document.getElementById('newSlideItem');
+const imageSlideInput = document.getElementById('imageSlideInput');
+const slideImageInput = document.getElementById('slideImage');
+const slideBox = document.getElementById('slideBox');
 
-const size = carouselItems[0].clientWidth;
+let carouselItems = document.querySelectorAll('.slide_item');
+let indicators = document.querySelectorAll('.indicator');
 
 let counter = 1;
 let autoSlideInterval;
@@ -76,13 +82,93 @@ function updateIndicators(currentIndex) {
 indicators.forEach((indicator) => {
   indicator.addEventListener('click', () => {
     const slideTo = parseInt(indicator.getAttribute('data-slide'));
+
+    // 슬라이드 이동을 위한 counter 값 설정
     counter = slideTo;
+
+    // 슬라이드 이동
+    carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
+    carouselSlide.style.transform = `translateX(${-size * counter}px)`;
+
+    // 인디케이터 상태 업데이트
+    updateIndicators(counter);
+
+    // 인디케이터 클릭 시 자동 슬라이드 중지
+    stopAutoSlide();
+  });
+});
+
+function addSlideItem() {
+  const selectedSlideType = slideTypeSelect.value;
+  const newItemContent = newSlideItemInput.value.trim();
+  const imageFile = slideImageInput.files[0];
+
+  if (selectedSlideType === 'text' && !newItemContent) {
+    alert('텍스트 내용을 입력해주세요!');
+    return;
+  }
+
+  if (selectedSlideType === 'image' && !imageFile) {
+    alert('이미지를 선택해주세요!');
+    return;
+  }
+
+  const newSlideItem = document.createElement('div');
+  newSlideItem.classList.add('slide_item');
+
+  if (selectedSlideType === 'text') {
+    newSlideItem.textContent = newItemContent;
+  }
+
+  if (selectedSlideType === 'image') {
+    const imgElement = document.createElement('img');
+    imgElement.src = URL.createObjectURL(imageFile);
+    imgElement.style.width = '100%';
+    imgElement.style.height = 'auto';
+    newSlideItem.appendChild(imgElement);
+  }
+
+  // 슬라이드 리스트에 추가 (첫 번째 클론 전 위치)
+  carouselSlide.insertBefore(newSlideItem, document.getElementById('firstClone'));
+
+  // 새로운 인디케이터 추가
+  const newIndicator = document.createElement('div');
+  newIndicator.classList.add('indicator');
+  newIndicator.setAttribute('data-slide', carouselItems.length - 1); // 인디케이터 번호 설정
+  document.querySelector('.indicator_container').appendChild(newIndicator);
+
+  // 슬라이드 및 인디케이터 업데이트
+  carouselItems = document.querySelectorAll('.slide_item');
+  indicators = document.querySelectorAll('.indicator');
+  newSlideItemInput.value = ''; // 입력 필드 초기화
+  slideImageInput.value = ''; // 이미지 필드 초기화
+  updateSlideListWidth();
+
+  // 새로 추가된 슬라이드 인디케이터 클릭 이벤트 연결
+  newIndicator.addEventListener('click', () => {
+    counter = parseInt(newIndicator.getAttribute('data-slide'));
     carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
     carouselSlide.style.transform = `translateX(${-size * counter}px)`;
     updateIndicators(counter);
     stopAutoSlide(); // 인디케이터 클릭 시 자동 슬라이드 중지
   });
+}
+
+// 슬라이드 타입 변경 시 필드 표시/숨기기
+slideTypeSelect.addEventListener('change', (event) => {
+  const selectedSlideType = event.target.value;
+
+  if (selectedSlideType === 'text') {
+    textSlideInput.style.display = 'block'; // 텍스트 입력 필드 표시
+    imageSlideInput.style.display = 'none'; // 이미지 업로드 필드 숨김
+  } else if (selectedSlideType === 'image') {
+    textSlideInput.style.display = 'none'; // 텍스트 입력 필드 숨김
+    imageSlideInput.style.display = 'block'; // 이미지 업로드 필드 표시
+  }
 });
+
+// "추가하기" 버튼 클릭 이벤트 리스너
+addSlideBtn.addEventListener('click', addSlideItem);
 
 // 버튼 클릭 이벤트
 nextBtn.addEventListener('click', () => {
