@@ -24,6 +24,12 @@ let slideInterval = parseInt(autoSlideIntervalInput.value); // 초기 자동 슬
 // 초기 위치 설정
 carouselSlide.style.transform = `translateX(${-size * counter}px)`;
 updateIndicators(counter);
+updateSlideListWidth();
+
+window.addEventListener('resize', () => {
+  size = slideBox.clientWidth;
+  updateSlideListWidth();
+});
 
 // 다음 슬라이드로 자동 이동하는 함수
 function autoSlide() {
@@ -76,6 +82,12 @@ function updateIndicators(currentIndex) {
       indicator.classList.add('active');
     }
   });
+}
+
+// 슬라이드 너비 세팅하는 함수
+function updateSlideListWidth() {
+  const totalWidth = size * carouselItems.length; // 각 슬라이드의 너비 * 슬라이드 개수
+  carouselSlide.style.width = `${totalWidth}px`;
 }
 
 // 인디케이터 클릭 시 해당 슬라이드로 이동하는 함수
