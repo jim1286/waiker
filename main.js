@@ -1,63 +1,61 @@
+// querySelector
 const carouselSlide = document.querySelector('.slide_list');
 const prevBtn = document.querySelector('.prevBtn');
 const nextBtn = document.querySelector('.nextBtn');
 const stopBtn = document.querySelector('.stopBtn');
+
+// querySelectorAll
+let carouselItems = document.querySelectorAll('.slide_item');
+let indicators = document.querySelectorAll('.indicator');
+
+// getElementById
 const transitionSpeedInput = document.getElementById('transitionSpeed');
 const autoSlideIntervalInput = document.getElementById('autoSlideInterval');
 const addSlideBtn = document.getElementById('addSlideBtn');
 const slideTypeSelect = document.getElementById('slideType');
 const textSlideInput = document.getElementById('textSlideInput');
-const newSlideItemInput = document.getElementById('newSlideItem');
+const newSlideTextInput = document.getElementById('newSlideText');
 const imageSlideInput = document.getElementById('imageSlideInput');
-const slideImageInput = document.getElementById('slideImage');
+const newSlideImageInput = document.getElementById('newSlideImage');
 const slideBox = document.getElementById('slideBox');
-
-let carouselItems = document.querySelectorAll('.slide_item');
-let indicators = document.querySelectorAll('.indicator');
+const firstElement = document.getElementById('firstElement');
 
 let counter = 1;
 let autoSlideInterval;
-let isAutoSliding = true; // 자동 슬라이드 상태를 추적
-let transitionSpeed = parseInt(transitionSpeedInput.value); // 초기 전환 속도
-let slideInterval = parseInt(autoSlideIntervalInput.value); // 초기 자동 슬라이드 간격
+let isAutoSliding = true;
+let transitionSpeed = parseInt(transitionSpeedInput.value);
+let slideInterval = parseInt(autoSlideIntervalInput.value);
 let size = slideBox.clientWidth;
 
 // 터치 이벤트를 위한 변수 선언
 let touchStartX = 0;
 let touchEndX = 0;
 
-// 터치 시작 이벤트
-carouselSlide.addEventListener('touchstart', (event) => {
-  touchStartX = event.touches[0].clientX; // 터치 시작 위치
-});
-
-// 터치 종료 이벤트
-carouselSlide.addEventListener('touchend', (event) => {
-  touchEndX = event.changedTouches[0].clientX; // 터치 종료 위치
-  stopAutoSlide();
-  handleGesture(); // 제스처 처리 함수 호출
-});
-
-// 제스처 처리 함수
-function handleGesture() {
-  if (touchEndX < touchStartX - 50) {
-    // 왼쪽으로 스와이프
-    moveSlide(1); // 다음 슬라이드로 이동
-  } else if (touchEndX > touchStartX + 50) {
-    // 오른쪽으로 스와이프
-    moveSlide(-1); // 이전 슬라이드로 이동
-  }
-}
-
 // 초기 위치 설정
 carouselSlide.style.transform = `translateX(${-size * counter}px)`;
 updateIndicators(counter);
 updateSlideListWidth();
 
-window.addEventListener('resize', () => {
-  size = slideBox.clientWidth;
-  updateSlideListWidth();
+// 터치 시작 이벤트
+carouselSlide.addEventListener('touchstart', (event) => {
+  touchStartX = event.touches[0].clientX;
 });
+
+// 터치 종료 이벤트
+carouselSlide.addEventListener('touchend', (event) => {
+  touchEndX = event.changedTouches[0].clientX;
+  stopAutoSlide();
+  handleGesture();
+});
+
+// 제스처 처리 함수
+function handleGesture() {
+  if (touchEndX < touchStartX - 50) {
+    moveSlide(1);
+  } else if (touchEndX > touchStartX + 50) {
+    moveSlide(-1);
+  }
+}
 
 textSlideInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
@@ -74,12 +72,12 @@ imageSlideInput.addEventListener('keydown', (event) => {
 });
 
 // 다음 슬라이드로 자동 이동하는 함수
-function autoSlide() {
+function startAutoSlide() {
   isAutoSliding = true;
   stopBtn.textContent = '자동 슬라이드 중지';
   autoSlideInterval = setInterval(() => {
     moveToNextSlide();
-  }, slideInterval); // 사용자가 설정한 자동 슬라이드 간격
+  }, slideInterval);
 }
 
 // 자동 슬라이드 중지 함수
@@ -94,7 +92,6 @@ function moveToNextSlide() {
   if (counter >= carouselItems.length - 1) {
     return;
   }
-
   moveSlide(1);
 }
 
@@ -103,7 +100,6 @@ function moveToPrevSlide() {
   if (counter <= 0) {
     return;
   }
-
   moveSlide(-1);
 }
 
@@ -112,7 +108,13 @@ function moveSlide(step) {
   carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
   counter += step;
   carouselSlide.style.transform = `translateX(${-size * counter}px)`;
-  updateIndicators(counter); // 슬라이드 이동 후 인디케이터 업데이트
+  updateIndicators(counter);
+}
+
+// 슬라이드 너비 세팅하는 함수
+function updateSlideListWidth() {
+  const totalWidth = size * carouselItems.length;
+  carouselSlide.style.width = `${totalWidth}px`;
 }
 
 // 인디케이터 업데이트 함수
@@ -120,44 +122,42 @@ function updateIndicators(currentIndex) {
   indicators.forEach((indicator, index) => {
     indicator.classList.remove('active');
     if (index === currentIndex - 1) {
-      // 인디케이터 인덱스는 슬라이드와 다름
       indicator.classList.add('active');
     }
   });
 }
 
-// 슬라이드 너비 세팅하는 함수
-function updateSlideListWidth() {
-  const totalWidth = size * carouselItems.length; // 각 슬라이드의 너비 * 슬라이드 개수
-  carouselSlide.style.width = `${totalWidth}px`;
+// 인디케이터 클릭 이벤트 함수
+function indicatorClickHandler(newCounter) {
+  counter = newCounter;
+  carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
+  carouselSlide.style.transform = `translateX(${-size * newCounter}px)`;
+  updateIndicators(newCounter);
+  stopAutoSlide();
+}
+
+// 무한루프 함수
+function infiniteSlideHandler(newCounter) {
+  carouselSlide.style.transition = 'none';
+  counter = newCounter;
+  carouselSlide.style.transform = `translateX(${-size * newCounter}px)`;
+  updateIndicators(newCounter);
 }
 
 // 인디케이터 클릭 시 해당 슬라이드로 이동하는 함수
 indicators.forEach((indicator) => {
   indicator.addEventListener('click', () => {
-    const slideTo = parseInt(indicator.getAttribute('data-slide'));
-
-    // 슬라이드 이동을 위한 counter 값 설정
-    counter = slideTo;
-
-    // 슬라이드 이동
-    carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
-    carouselSlide.style.transform = `translateX(${-size * counter}px)`;
-
-    // 인디케이터 상태 업데이트
-    updateIndicators(counter);
-
-    // 인디케이터 클릭 시 자동 슬라이드 중지
-    stopAutoSlide();
+    indicatorClickHandler(parseInt(indicator.getAttribute('data-slide')));
   });
 });
 
+// 슬라이드에 항목 추가하는 함수
 function addSlideItem() {
   const selectedSlideType = slideTypeSelect.value;
-  const newItemContent = newSlideItemInput.value.trim();
-  const imageFile = slideImageInput.files[0];
+  const newTextContent = newSlideTextInput.value.trim();
+  const imageFile = newSlideImageInput.files[0];
 
-  if (selectedSlideType === 'text' && !newItemContent) {
+  if (selectedSlideType === 'text' && !newTextContent) {
     alert('텍스트 내용을 입력해주세요!');
     return;
   }
@@ -167,11 +167,13 @@ function addSlideItem() {
     return;
   }
 
-  const newSlideItem = document.createElement('div');
-  newSlideItem.classList.add('slide_item');
+  const newSlideElement = document.createElement('div');
+  newSlideElement.classList.add('slide_item');
+  firstElement.innerHTML = '';
 
   if (selectedSlideType === 'text') {
-    newSlideItem.textContent = newItemContent;
+    newSlideElement.textContent = newTextContent;
+    firstElement.textContent = newTextContent;
   }
 
   if (selectedSlideType === 'image') {
@@ -179,33 +181,29 @@ function addSlideItem() {
     imgElement.src = URL.createObjectURL(imageFile);
     imgElement.style.width = '100%';
     imgElement.style.height = 'auto';
-    newSlideItem.appendChild(imgElement);
+    newSlideElement.appendChild(imgElement);
+    const imgClone = imgElement.cloneNode(true);
+    firstElement.appendChild(imgClone);
   }
 
-  // 슬라이드 리스트에 추가 (첫 번째 클론 전 위치)
-  carouselSlide.insertBefore(newSlideItem, document.getElementById('firstClone'));
+  // slide_item 마지막 인덱스에 추가
+  carouselSlide.insertBefore(newSlideElement, document.getElementById('lastElement'));
 
-  // 새로운 인디케이터 추가
+  // 인디케이터 추가
   const newIndicator = document.createElement('div');
   newIndicator.classList.add('indicator');
-  newIndicator.setAttribute('data-slide', carouselItems.length - 1); // 인디케이터 번호 설정
+  newIndicator.setAttribute('data-slide', carouselItems.length - 1);
   document.querySelector('.indicator_container').appendChild(newIndicator);
 
   // 슬라이드 및 인디케이터 업데이트
   carouselItems = document.querySelectorAll('.slide_item');
   indicators = document.querySelectorAll('.indicator');
-  newSlideItemInput.value = ''; // 입력 필드 초기화
-  slideImageInput.value = ''; // 이미지 필드 초기화
+  newSlideTextInput.value = '';
+  newSlideImageInput.value = '';
   updateSlideListWidth();
 
   // 새로 추가된 슬라이드 인디케이터 클릭 이벤트 연결
-  newIndicator.addEventListener('click', () => {
-    counter = parseInt(newIndicator.getAttribute('data-slide'));
-    carouselSlide.style.transition = `transform ${transitionSpeed}ms ease-in-out`;
-    carouselSlide.style.transform = `translateX(${-size * counter}px)`;
-    updateIndicators(counter);
-    stopAutoSlide(); // 인디케이터 클릭 시 자동 슬라이드 중지
-  });
+  indicatorClickHandler(parseInt(newIndicator.getAttribute('data-slide')));
 }
 
 // 슬라이드 타입 변경 시 필드 표시/숨기기
@@ -213,34 +211,33 @@ slideTypeSelect.addEventListener('change', (event) => {
   const selectedSlideType = event.target.value;
 
   if (selectedSlideType === 'text') {
-    textSlideInput.style.display = 'block'; // 텍스트 입력 필드 표시
-    imageSlideInput.style.display = 'none'; // 이미지 업로드 필드 숨김
+    textSlideInput.style.display = 'block';
+    imageSlideInput.style.display = 'none';
   } else if (selectedSlideType === 'image') {
-    textSlideInput.style.display = 'none'; // 텍스트 입력 필드 숨김
-    imageSlideInput.style.display = 'block'; // 이미지 업로드 필드 표시
+    textSlideInput.style.display = 'none';
+    imageSlideInput.style.display = 'block';
   }
 });
 
-// "추가하기" 버튼 클릭 이벤트 리스너
+// 버튼 클릭 이벤트들
 addSlideBtn.addEventListener('click', addSlideItem);
 
-// 버튼 클릭 이벤트
 nextBtn.addEventListener('click', () => {
   moveToNextSlide();
-  stopAutoSlide(); // 수동 슬라이드 조작 시 자동 슬라이드 중지
+  stopAutoSlide();
 });
 
 prevBtn.addEventListener('click', () => {
   moveToPrevSlide();
-  stopAutoSlide(); // 수동 슬라이드 조작 시 자동 슬라이드 중지
+  stopAutoSlide();
 });
 
-// 자동 슬라이드 중지 버튼 클릭 이벤트  리스너
+// 자동 슬라이드 중지 버튼 클릭 이벤트 리스너
 stopBtn.addEventListener('click', () => {
   if (isAutoSliding) {
     stopAutoSlide();
   } else {
-    autoSlide();
+    startAutoSlide();
   }
 });
 
@@ -253,27 +250,28 @@ autoSlideIntervalInput.addEventListener('change', (event) => {
   slideInterval = parseInt(event.target.value);
 
   if (isAutoSliding) {
-    stopAutoSlide(); // 현재 자동 슬라이드 중지
-    autoSlide(); // 새로운 간격으로 다시 시작
+    stopAutoSlide();
+    startAutoSlide();
   }
 });
 
 // 무한 루프를 위한 transitionend 이벤트 처리
 carouselSlide.addEventListener('transitionend', () => {
-  if (carouselItems[counter].id === 'firstClone') {
-    carouselSlide.style.transition = 'none'; // 애니메이션 없이 위치 이동
-    counter = 1;
-    carouselSlide.style.transform = `translateX(${-size * counter}px)`;
-    updateIndicators(counter);
+  if (carouselItems[counter].id === 'firstElement') {
+    infiniteSlideHandler(carouselItems.length - 2);
+    return;
   }
 
-  if (carouselItems[counter].id === 'lastClone') {
-    carouselSlide.style.transition = 'none'; // 애니메이션 없이 위치 이동
-    counter = carouselItems.length - 2;
-    carouselSlide.style.transform = `translateX(${-size * counter}px)`;
-    updateIndicators(counter);
+  if (carouselItems[counter].id === 'lastElement') {
+    infiniteSlideHandler(1);
+    return;
   }
 });
 
+window.addEventListener('resize', () => {
+  size = slideBox.clientWidth;
+  updateSlideListWidth();
+});
+
 // 자동 슬라이드 시작
-autoSlide();
+startAutoSlide();
