@@ -132,7 +132,33 @@ button {
 .indicator_container {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  padding: 10px;
+  width: 100px;
+  overflow-x: auto;
+}
+
+@media (min-width: 600px) {
+  .indicator_container {
+    width: 200px;
+  }
+}
+
+@media (min-width: 900px) {
+  .indicator_container {
+    width: 300px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .indicator_container {
+    width: 400px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .indicator_container {
+    width: 500px;
+  }
 }
 
 .indicator {
@@ -142,6 +168,7 @@ button {
   background-color: lightgray;
   margin: 0 5px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .indicator.active {
